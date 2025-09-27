@@ -1,0 +1,91 @@
+[gd_scene load_steps=7 format=3 uid="uid://bl2na2v7107km"]
+
+[ext_resource type="Texture2D" uid="uid://lda0b2bll8w2" path="res://assets/background.jpg" id="1_idkgt"]
+[ext_resource type="PackedScene" uid="uid://cadvemuqbliqd" path="res://scenes/grid.tscn" id="2_kinr6"]
+[ext_resource type="Script" uid="uid://dqh64gy11f7v0" path="res://scripts/game_manager.gd" id="2_pxwbd"]
+[ext_resource type="Script" uid="uid://b5211dd1e5dqc" path="res://scripts/player.gd" id="3_rca61"]
+[ext_resource type="Script" uid="uid://datspa21eksac" path="res://scripts/enemy.gd" id="4_8qdv8"]
+[ext_resource type="Script" uid="uid://yl01u7g4rolf" path="res://scripts/label.gd" id="6_1i8jf"]
+
+[node name="BattleScene" type="Node2D"]
+
+[node name="Background" type="Sprite2D" parent="."]
+position = Vector2(540, 540)
+texture = ExtResource("1_idkgt")
+
+[node name="Board" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 0
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="GameManager" type="Node" parent="Board"]
+script = ExtResource("2_pxwbd")
+
+[node name="Ground" type="VBoxContainer" parent="Board"]
+layout_mode = 0
+offset_left = 580.0
+offset_top = 80.0
+offset_right = 992.0
+offset_bottom = 1000.0
+theme_override_constants/separation = 50
+
+[node name="BonusGround" parent="Board/Ground" instance=ExtResource("2_kinr6")]
+layout_mode = 2
+columns = 4
+width = 4
+height = 1
+
+[node name="EnemyGround" parent="Board/Ground" instance=ExtResource("2_kinr6")]
+layout_mode = 2
+columns = 4
+width = 4
+
+[node name="PlayerGround" parent="Board/Ground" instance=ExtResource("2_kinr6")]
+layout_mode = 2
+columns = 4
+width = 4
+height = 2
+
+[node name="DangerLine" type="ColorRect" parent="Board"]
+layout_mode = 0
+offset_left = 554.0
+offset_top = 768.0
+offset_right = 594.0
+offset_bottom = 788.0
+scale = Vector2(11.595646, 0.39999992)
+color = Color(0.8509804, 0.2, 0.2, 1)
+
+[node name="Pieces" type="Control" parent="Board"]
+anchors_preset = 0
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="Player" type="Control" parent="Board/Pieces"]
+anchors_preset = 0
+offset_right = 40.0
+offset_bottom = 40.0
+script = ExtResource("3_rca61")
+ground_path = NodePath("../../Ground/PlayerGround")
+bonus_ground_path = NodePath("../../Ground/BonusGround")
+game_manager_path = NodePath("../../GameManager")
+
+[node name="Enemy" type="Control" parent="Board/Pieces"]
+anchors_preset = 0
+offset_right = 40.0
+offset_bottom = 40.0
+script = ExtResource("4_8qdv8")
+ground_path = NodePath("../../Ground/EnemyGround")
+
+[node name="Label" type="Label" parent="Board"]
+layout_mode = 0
+offset_left = 80.0
+offset_top = 200.0
+offset_right = 120.0
+offset_bottom = 310.0
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 4
+theme_override_font_sizes/font_size = 60
+script = ExtResource("6_1i8jf")
+game_manager_path = NodePath("../GameManager")
