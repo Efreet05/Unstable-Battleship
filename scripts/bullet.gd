@@ -47,7 +47,10 @@ func _check_hit():
 			clamp(c.y, er.position.y, er.position.y + er.size.y)
 		)
 		if c.distance_squared_to(closest) <= r * r:
-			(e as Node).queue_free()
+			if e.has_method("on_hit_by_bullet"):
+				e.on_hit_by_bullet()     # item enemies can emit a bonus before dying
+			else:
+				(e as Node).queue_free() # default: normal enemy dies immediately
 			queue_free()
 			return
 

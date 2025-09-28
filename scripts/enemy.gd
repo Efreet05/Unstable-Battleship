@@ -15,6 +15,7 @@ Integration notes:
 @export var ground_path: NodePath
 @export var start_col: int = 1
 @export var triangle_size := Vector2i(48, 42)
+@export var start_row_from_top: int = 1  # 1 = very top row, 2 = second row from top
 
 var ground
 var cell := Vector2i.ZERO
@@ -28,7 +29,7 @@ func _ready():
 	var cols: int = ground.get_cols()
 	var rows: int = ground.get_rows()
 	cell.x = clamp(start_col, 0, cols - 1)
-	cell.y = rows - 1
+	cell.y = clamp(rows - start_row_from_top, 0, rows - 1)
 
 	# Wait 1–2 frames so container layout finishes, then snap to the initial cell
 	await get_tree().process_frame
@@ -43,6 +44,9 @@ func enemy_take_turn():
 	if next.y >= 0:
 		cell = next
 		ground.place_actor_at_cell(self, cell.x, cell.y)
+	else:
+		cell = next
+		visible = false #invisible when defeat
 
 func _draw():
 	var w := float(size.x)
@@ -51,3 +55,9 @@ func _draw():
 	var p_left   := Vector2(0.0, 0.0)
 	var p_right  := Vector2(w, 0.0)
 	draw_colored_polygon(PackedVector2Array([p_bottom, p_left, p_right]), Color(0.85, 0.2, 0.2))
+
+func get_cell() -> Vector2i:
+	return cell
+	
+func on_hit_by_bullet() -> void:
+	queue_free()  # default death for normal enemies

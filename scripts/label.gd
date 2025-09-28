@@ -19,6 +19,9 @@ var used_steps: int = 0
 var max_steps: int = 0
 var shot_triggers: PackedInt32Array = []
 
+var _turn_current: int = 0
+var _turn_max: int = 10
+
 func _ready():
 	gm = get_node_or_null(game_manager_path)
 
@@ -75,12 +78,19 @@ func set_used_and_max(used: int, new_max: int) -> void:
 	max_steps = max(0, new_max)
 	_update_text()
 
+func set_turn_counter(current: int, max_turns: int) -> void:
+	# Called by Spawner each time a new player turn starts.
+	_turn_current = current
+	_turn_max = max_turns
+	_update_text()
+
 # When the GM rolls new shot triggers at player-phase start.
 func _on_triggers_generated(triggers: PackedInt32Array) -> void:
 	shot_triggers = triggers
 	_update_text()
 
 func _update_text():
+	var turn_text := "Turn: %d/%d" % [_turn_current, _turn_max]
 	var steps_text := "Steps: %d/%d" % [clamp(used_steps, 0, max_steps), max_steps]
 	var shots_text := "Shots at: --"
 	if shot_triggers.size() > 0:
@@ -88,4 +98,4 @@ func _update_text():
 		for v in shot_triggers:
 			parts.append(str(v))
 		shots_text = "Shots at: " + String(", ").join(parts)
-	text = steps_text + "\n" + shots_text
+	text = turn_text + "\n" + steps_text + "\n" + shots_text + "\n" + "end turn: space"
