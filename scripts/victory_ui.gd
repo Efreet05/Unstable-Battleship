@@ -63,6 +63,28 @@ func _on_restart() -> void:
 func _on_next() -> void:
 	if next_level_path == "":
 		return
+	
+	# Play victory sound before transitioning to next level
+	_play_victory_sound()
+	
 	var st := get_tree()
 	st.paused = false
 	st.change_scene_to_file(next_level_path)
+
+# Play victory sound using audio file
+func _play_victory_sound():
+	var audio_player = AudioStreamPlayer.new()
+	add_child(audio_player)
+	
+	# Load the victory sound (replace with your MP3 file path)
+	var victory_sound = load("res://assets/victory.mp3")
+	if victory_sound:
+		audio_player.stream = victory_sound
+		audio_player.volume_db = -5  # Slightly louder for celebration
+		audio_player.play()
+		
+		# Note: We don't wait for the sound to finish since we're changing scenes
+		# The sound will play briefly before the scene transition
+	else:
+		# Clean up if no audio file found
+		audio_player.queue_free()

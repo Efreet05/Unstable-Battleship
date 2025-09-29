@@ -47,12 +47,34 @@ func _check_hit():
 			clamp(c.y, er.position.y, er.position.y + er.size.y)
 		)
 		if c.distance_squared_to(closest) <= r * r:
+			# Play enemy death sound
+			_play_enemy_death_sound()
+			
 			if e.has_method("on_hit_by_bullet"):
 				e.on_hit_by_bullet()     # item enemies can emit a bonus before dying
 			else:
 				(e as Node).queue_free() # default: normal enemy dies immediately
 			queue_free()
 			return
+
+# Play enemy death sound using audio file
+func _play_enemy_death_sound():
+	var audio_player = AudioStreamPlayer.new()
+	get_parent().add_child(audio_player)  # Add to parent since bullet will be freed
+	
+	# Load the death sound (replace with your MP3 file path)
+	var death_sound = load("res://assets/enemy_death.mp3")
+	if death_sound:
+		audio_player.stream = death_sound
+		audio_player.volume_db = -8
+		audio_player.play()
+		
+		# Clean up after sound finishes
+		await audio_player.finished
+		audio_player.queue_free()
+	else:
+		# Clean up if no audio file found
+		audio_player.queue_free()
 
 func _draw():
 	draw_circle(Vector2(radius, radius), radius, color)

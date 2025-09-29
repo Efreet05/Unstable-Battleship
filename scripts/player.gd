@@ -106,6 +106,28 @@ func _fire_projectile():
 	p.top_limit_y = bonus_top_y
 	p.global_position = start_center - p.size * 0.5
 	p.z_index = 1
+	
+	# Play shoot sound effect
+	_play_shoot_sound()
+
+# Play shoot sound using audio file
+func _play_shoot_sound():
+	var audio_player = AudioStreamPlayer.new()
+	add_child(audio_player)
+	
+	# Load the shoot sound (replace with your MP3 file path)
+	var shoot_sound = load("res://assets/shoot.mp3")
+	if shoot_sound:
+		audio_player.stream = shoot_sound
+		audio_player.volume_db = -10
+		audio_player.play()
+		
+		# Clean up after sound finishes
+		await audio_player.finished
+		audio_player.queue_free()
+	else:
+		# Fallback: simple beep if no audio file found
+		audio_player.queue_free()
 
 func _draw():
 	var w := float(size.x)
